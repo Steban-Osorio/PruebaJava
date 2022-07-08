@@ -1,0 +1,130 @@
+create table MARCAS
+(
+	codigo int NOT null,
+	NOMBRE_MARCA VARCHAR(20) not null,
+	constraint MARCAS_pk
+		primary key (codigo)
+);
+
+
+create table CLIENTES
+(
+	TIPO_DOCUMENTO VARCHAR(2) not null,
+	DOCUMENTO INTEGER not null,
+	PRIMER_NOMBRE VARCHAR(30) not null,
+	SEGUNDO_NOMBRE VARCHAR(30) null,
+	PRIMER_APELLIDO VARCHAR(30) not null,
+	SEGUNDO_APELLIDO VARCHAR(30) null,
+	CELULAR VARCHAR(10) not null,
+	DIRECCION VARCHAR(200) not null,
+	EMAIL VARCHAR(100) not null,
+	constraint CLIENTES_pk
+		primary key (TIPO_DOCUMENTO, DOCUMENTO)
+);
+
+create table MECANICOS
+(
+	TIPO_DOCUMENTO VARCHAR(2) not null,
+	DOCUMENTO INTEGER not null,
+	PRIMER_NOMBRE VARCHAR(30) not null,
+	SEGUNDO_NOMBRE VARCHAR(30) null,
+	PRIMER_APELLIDO VARCHAR(30) not null,
+	SEGUNDO_APELLIDO VARCHAR(30) null,
+	CELULAR VARCHAR(10) not null,
+	DIRECCION VARCHAR(200) not null,
+	EMAIL VARCHAR(100) null,
+	ESTADO CHAR not null,
+	constraint MECANICOS_pk
+		primary key (TIPO_DOCUMENTO, DOCUMENTO)
+);
+
+create table SERVICIOS
+(
+	CODIGO INTEGER not null,
+	NOMBRE_SERVICIO VARCHAR(20) not null,
+	PRECIO NUMERIC not null,
+	constraint SERVICIOS_pk
+		primary key (CODIGO)
+);
+
+create table REPUESTOS
+(
+	CODIGO INTEGER not null,
+	NOMBRE_REPUESTO VARCHAR(100) not null,
+	PRECIO_UNITARIO NUMERIC not null,
+	UNIDADES_INVENTARIO INTEGER not null,
+	PROVEEDOR VARCHAR(300) not null,
+	constraint REPUESTOS_pk
+		primary key (CODIGO)
+);
+
+create table VEHICULOS
+(
+	PLACA VARCHAR(6) not null,
+	COLOR VARCHAR(30) null,
+	COD_MARCA INTEGER not null,
+	CLI_DOCUMENTO INTEGER not null,
+	CLI_TIPO_DOCUMENTO VARCHAR(2) not null,
+	constraint VEHICULOS_pk
+		primary key (PLACA),
+	constraint VEHICULOS_clientes_TIPO_DOCUMENTO_DOCUMENTO_fk
+		foreign key (CLI_TIPO_DOCUMENTO, CLI_DOCUMENTO) references clientes (TIPO_DOCUMENTO, DOCUMENTO),
+	constraint VEHICULOS_marcas_codigo_fk
+		foreign key (COD_MARCA) references marcas (codigo)
+);
+
+create table MANTENIMIENTOS
+(
+	CODIGO INTEGER not null,
+	ESTADO INTEGER null,
+	COD_PLACA VARCHAR(6) not null,
+	FECHA DATE not null,
+	MEC_DOCUMENTO INTEGER not null,
+	MEC_TIPO_DOCUMENTO VARCHAR(2) NOT null,
+	constraint MANTENIMIENTOS_pk
+		primary key (CODIGO),
+	constraint MANTENIMIENTOS_mecanicos_fk
+		foreign key (MEC_TIPO_DOCUMENTO, MEC_DOCUMENTO) references mecanicos (TIPO_DOCUMENTO, DOCUMENTO),
+	constraint MANTENIMIENTOS_vehiculos_PLACA_fk
+		foreign key (COD_PLACA) references vehiculos (PLACA)
+);
+
+create table FOTOS
+(
+	CODIGO INTEGER not null,
+	RUTA VARCHAR(200) null,
+	COD_MANTENIMIENTO INTEGER not null,
+	constraint FOTOS_pk
+		primary key (CODIGO),
+	constraint FOTOS_mantenimientos_CODIGO_fk
+		foreign key (COD_MANTENIMIENTO) references mantenimientos (CODIGO)
+);
+
+create table SERVICIOS_X_MANTENIMIENTO
+(
+	CODIGO INTEGER not null,
+	TIEMPO_ESTIMADO INTEGER not null,
+	COD_SERVICIO INTEGER not null,
+	COD_MANTENIMIENTO INTEGER not null,
+	constraint SERVICIOS_X_MANTENIMIENTO_pk
+		primary key (CODIGO),
+	constraint SERVICIOS_X_MANTENIMIENTO_mantenimientos_CODIGO_fk
+		foreign key (COD_MANTENIMIENTO) references mantenimientos (CODIGO),
+	constraint SERVICIOS_X_MANTENIMIENTO_servicios_CODIGO_fk
+		foreign key (COD_SERVICIO) references servicios (CODIGO)
+);
+
+create table REPUESTOS_X_MANTENIMIENTO
+(
+	CODIGO INTEGER not null,
+	UNIDADES INTEGER not null,
+	TIEMPO_ESTIMADO INTEGER not null,
+	COD_MANTENIMIENTO INTEGER not null,
+	COD_REPUESTO int not null,
+	constraint REPUESTOS_X_MANTENIMIENTO_pk
+		primary key (CODIGO),
+	constraint REPUESTOS_X_MANTENIMIENTO_mantenimientos_CODIGO_fk
+		foreign key (COD_MANTENIMIENTO) references mantenimientos (CODIGO),
+	constraint REPUESTOS_X_MANTENIMIENTO_repuestos_CODIGO_fk
+		foreign key (COD_REPUESTO) references repuestos (CODIGO)
+);
